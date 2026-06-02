@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado de Segurança de Software - 40 Questões</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #667eea;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .info {
+      font-size: 1.1em;
+      color: #495057;
+    }
+
+    .badge {
+      background: #667eea;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .questao {
+      margin-bottom: 35px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s;
+    }
+
+    .questao:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .questao-texto {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.05em;
+      line-height: 1.4;
+    }
+
+    .opcoes {
+      margin-left: 20px;
+    }
+
+    .opcao {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .opcao:hover {
+      background: #e9ecef;
+    }
+
+    .opcao input {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+
+    .opcao label {
+      cursor: pointer;
+      flex: 1;
+      color: #555;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback.correta {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .feedback.incorreta {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    .botoes {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-corrigir {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-corrigir:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+
+    .btn-novo {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-novo:hover {
+      background: #5a67d8;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+    }
+
+    .resultado-final {
+      margin-top: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      color: #999;
+      font-size: 0.85em;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .questao {
+        padding: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔒 Simulado de Segurança de Software</h1>
+    <div class="subtitle">Teste seus conhecimentos - 40 questões disponíveis</div>
+
+    <div class="stats">
+      <div class="info">
+        📋 Banco com <strong><span id="totalQuestoes">0</span> questões</strong>
+      </div>
+      <div class="badge" id="questoesRestantes">
+        10 questões por simulado
+      </div>
+    </div>
+
+    <div id="simulado"></div>
+
+    <div class="botoes">
+      <button class="btn-corrigir" onclick="corrigirSimulado()">✅ Corrigir Simulado</button>
+      <button class="btn-novo" onclick="novoSimulado()">🔄 Novo Simulado</button>
+    </div>
+
+    <div id="resultado" class="resultado-final" style="display: none;"></div>
+    <div class="footer">
+      <p>📚 Baseado em questões oficiais de certificação | Gabaritos comentados inclusos</p>
+    </div>
+  </div>
+
+  <script>
+    // ==================== BANCO DE DADOS DE QUESTÕES ====================
+    // Todas as 40 questões extraídas dos PDFs com as respostas corretas
+    
+    const questoesDB = [
+      // Questões do seg1.pdf
+      {
+        enunciado: "Uma boa prática para a definição de um projeto seguro é estabelecer, desde o início, as boas práticas de segurança. Infelizmente, ainda é bastante comum que muitas empresas não incentivem que os desenvolvedores de software trabalhem dessa forma. Nesse sentido, selecione a opção que contém o nome do princípio descrito.",
+        opcoes: ["Segurança Inicial", "Diretrizes de Segurança", "Princípios de Segurança", "Static Security", "Security by Design"],
+        correta: "Security by Design"
+      },
+      {
+        enunciado: "Depois de muita deliberação, os gestores de uma empresa em recuperação decidiram injetar uma grande quantidade de recursos próprios para aumentar a credibilidade dos investidores e marcaram uma data específica para realizar essa ação. Com base nessa afirmação, escolha a opção correta.",
+        opcoes: [
+          "A afirmação é uma informação sensível, pois é necessário que os gestores tracem uma estratégia para evitar instabilidades no mercado",
+          "A afirmação trata de uma informação confidencial, pois expõem os valores que serão injetados na empresa",
+          "É o caso típico de uma informação sensível, pois ela pode afetar o comportamento dos investidores",
+          "Claramente, é uma informação sensível, pois expõem os nomes dos investidores",
+          "Trata-se de uma informação confidencial, pois está relacionada à estratégia da empresa"
+        ],
+        correta: "Trata-se de uma informação confidencial, pois está relacionada à estratégia da empresa"
+      },
+      {
+        enunciado: "No mundo ideal, um software deveria ficar disponível a qualquer momento para os usuários legítimos do sistema. Na prática, sabemos que há diversos fatores que impedem que isso ocorra. Selecione a opção correta que apresente um fator positivo para que um software não esteja disponível.",
+        opcoes: [
+          "Problemas com o hardware",
+          "Inconsistências no funcionamento da rede",
+          "Vulnerabilidades conhecidas do software",
+          "Excesso de requisições",
+          "Realização de manutenções preventivas"
+        ],
+        correta: "Realização de manutenções preventivas"
+      },
+      {
+        enunciado: "Para utilizar um sistema, precisamos entrar com o nosso login de usuário e senha. Além disso, no caso de sistemas seguros, ainda precisamos confirmar nossa identificação em outro dispositivo pré-cadastrado. Com base nas informações acima, selecione a opção correta que contém o nome dessa técnica.",
+        opcoes: ["Autenticação multifator", "Recursos móveis", "Autenticação móvel", "Senha de segurança dupla", "Autenticação por criptografia"],
+        correta: "Autenticação multifator"
+      },
+      {
+        enunciado: "Uma das técnicas úteis para garantir a confidencialidade é o uso de algoritmos de criptografia. Selecione a opção correta a respeito da afirmação: 'O uso de algoritmos de criptografia elimina as vulnerabilidades de um software'.",
+        opcoes: [
+          "Está errada, pois os algoritmos de criptografia ainda são muito fáceis de serem violados",
+          "Está errada, pois um software pode conter outras vulnerabilidades fora do escopo dos algoritmos de criptografia",
+          "Está errada, pois os algoritmos de criptografia são muito complexos e isso aumenta as vulnerabilidades",
+          "Está correta, pois os algoritmos de criptografia são invioláveis",
+          "Está correta, pois os algoritmos de criptografia já são parametrizados pelos fornecedores"
+        ],
+        correta: "Está errada, pois um software pode conter outras vulnerabilidades fora do escopo dos algoritmos de criptografia"
+      },
+      {
+        enunciado: "Muito raramente, uma empresa desenvolve todos os componentes de um software. O normal é que utilizem componentes de outras empresas. Selecione a opção correta com uma forma de reduzir os riscos de inserir vulnerabilidades.",
+        opcoes: [
+          "Utilizar apenas componentes de software com licença comercial",
+          "Trabalhar apenas com componentes de código aberto",
+          "Realizar estudos sobre o código-fonte do componente",
+          "Utilizar qualquer biblioteca com criptografia",
+          "Utilizar componentes de empresas com boa reputação e com documentação"
+        ],
+        correta: "Utilizar componentes de empresas com boa reputação e com documentação"
+      },
+      {
+        enunciado: "O termo segurança nos remete a uma situação de proteção. Ele também é utilizado no contexto de software. Selecione a opção correta sobre o que é um software seguro:",
+        opcoes: [
+          "É um programa de conscientização dos usuários para usarem os dados com cuidados",
+          "Trata-se de um sistema que ofereça garantias de que não há nenhuma vulnerabilidade",
+          "É um programa que aplica diversas práticas de segurança para reduzir a exposição a vulnerabilidades",
+          "São programas fornecidos por empresas conhecidas",
+          "São programas que utilizam código aberto"
+        ],
+        correta: "É um programa que aplica diversas práticas de segurança para reduzir a exposição a vulnerabilidades"
+      },
+      {
+        enunciado: "A avaliação de riscos em segurança da informação envolve identificar ameaças, vulnerabilidades e os possíveis impactos. Assinale a alternativa que melhor descreve o objetivo principal desse processo.",
+        opcoes: [
+          "Eliminar todos os riscos associados ao sistema, garantindo segurança total",
+          "Definir políticas de senha para impedir qualquer tipo de invasão ao sistema",
+          "Estimar a probabilidade e o impacto de possíveis incidentes, permitindo priorizar ações de segurança",
+          "Aumentar o número de controles de acesso para evitar comportamentos indevidos dos usuários",
+          "Substituir auditorias periódicas, já que a avaliação de riscos cobre todas as necessidades"
+        ],
+        correta: "Estimar a probabilidade e o impacto de possíveis incidentes, permitindo priorizar ações de segurança"
+      },
+      {
+        enunciado: "Apesar de todos os cuidados que possamos ter com um sistema, ainda assim estamos sujeitos a ataques. Selecione a opção correta sobre uma forma eficiente de evitarmos que um sistema fique indisponível devido a um ataque.",
+        opcoes: [
+          "Utilizar apenas sistemas de empresas conhecidas",
+          "Aplicar algoritmos de criptografia nos dados",
+          "Utilizar versões redundantes do sistema",
+          "Ter um plano conceitual de recuperação de desastres",
+          "Utilizar versões do sistema de outros fornecedores"
+        ],
+        correta: "Utilizar versões redundantes do sistema"
+      },
+      {
+        enunciado: "Um aspecto básico para a construção de um software seguro é aplicar os princípios de segurança. Considere a afirmação: 'O princípio de segurança mais importante é o da confidencialidade.' Selecione a opção correta a respeito da afirmação.",
+        opcoes: [
+          "Está errada, pois existem outros aspectos dos princípios de segurança que se somam para minimizar a exposição a riscos",
+          "Está errada, pois o princípio de segurança mais importante é o de autorização",
+          "Está errada, pois não há como garantir a confidencialidade dos dados através de um software",
+          "Está correta, pois restringe o acesso aos dados apenas para pessoas autorizadas",
+          "Está correta, pois é a partir dela que eliminamos todas as vulnerabilidades"
+        ],
+        correta: "Está errada, pois existem outros aspectos dos princípios de segurança que se somam para minimizar a exposição a riscos"
+      },
+      // Questões do seg2.pdf
+      {
+        enunciado: "Existem muitos parâmetros importantes de segurança. Normalmente, para ter acesso a um sistema, um usuário precisa fornecer um login e uma senha. Selecione a opção correta sobre o nome desse processo:",
+        opcoes: ["Validação de entrada", "Teste de perfil", "Autenticação do usuário", "Disponibilidade do sistema", "Privacidade de dados"],
+        correta: "Autenticação do usuário"
+      },
+      {
+        enunciado: "Um sistema pode fazer chamadas a diferentes programas. Selecione a opção correta que nos ajuda a mitigar vulnerabilidades associadas a chamadas de programas de terceiros.",
+        opcoes: [
+          "Conceder privilégios de chamadas para apenas alguns perfis",
+          "Construir o máximo de funcionalidades para evitar chamadas a programas de terceiros",
+          "Garantir que os dados sejam criptografados por um algoritmo próprio antes das chamadas",
+          "Fazer chamadas parciais e analisar os resultados antes de continuar",
+          "Reduzir o volume de dados que devem ser enviados para uma chamada"
+        ],
+        correta: "Conceder privilégios de chamadas para apenas alguns perfis"
+      },
+      {
+        enunciado: "Uma boa prática de segurança é manter os sistemas atualizados. Selecione a opção correta que apresenta o nome de um instrumento de atualização.",
+        opcoes: ["Arquivos de logs", "Arquivos criptografados", "Arquivos de patches", "Arquivo de mapeamento de vulnerabilidades", "Arquivo de testes de estresse"],
+        correta: "Arquivos de patches"
+      },
+      {
+        enunciado: "Existem alguns tipos de criptografia. Selecione a opção correta que apresente o princípio geral que esses algoritmos utilizam para garantir a proteção dos dados.",
+        opcoes: [
+          "Através de controles de segurança",
+          "Pela aplicação de mecanismos de acesso mínimo",
+          "Pela troca de dados verdadeiros por outros que sejam falsos",
+          "Pela separação dos dados em lotes",
+          "Através da transformação dos dados para um formato que só possa ser compreendido por quem possui a chave"
+        ],
+        correta: "Através da transformação dos dados para um formato que só possa ser compreendido por quem possui a chave"
+      },
+      {
+        enunciado: "Um dos controles de segurança é o monitoramento do uso das funcionalidades e do acesso aos dados. Selecione a opção correta que apresenta um aspecto fundamental para que possamos realizar o monitoramento de segurança de um sistema.",
+        opcoes: [
+          "Instalar câmeras para vigiar os usuários",
+          "Manter o software sempre atualizado",
+          "Definir os procedimentos necessários para um monitoramento eficiente",
+          "Usar ferramentas que gerem arquivos logs do uso do sistema",
+          "Garantir que todos os dados estejam criptografados"
+        ],
+        correta: "Usar ferramentas que gerem arquivos logs do uso do sistema"
+      },
+      {
+        enunciado: "É bem comum associarmos o termo senha forte à segurança. Mas um processo que force o usuário a usar uma senha muito complexa também é um exemplo de vulnerabilidade. Selecione a opção correta que apresente um exemplo de situação insegura ocasionada por uma política rigorosa de senhas muito complexas.",
+        opcoes: [
+          "O usuário anotar a senha",
+          "O usuário esquece a senha",
+          "O usuário ficar com o sistema bloqueado por várias tentativas erradas",
+          "Fazer uma composição entre letras e números forte",
+          "Escolher caracteres de símbolos especiais"
+        ],
+        correta: "O usuário anotar a senha"
+      },
+      {
+        enunciado: "Uma das sugestões para reduzir vulnerabilidades é fazer revisões do código. Selecione a opção correta que apresenta uma forma de reduzir os riscos de inserirmos vulnerabilidades em um código após a revisão.",
+        opcoes: [
+          "Otimização da mão-de-obra de programadores sem experiência",
+          "Dedicar todo tempo para documentação e reuniões",
+          "Sempre que possível, mudar o sistema para linguagens mais modernas",
+          "Fazer consultas em sites de pesquisa com aprendizado de máquina",
+          "Através de diversos testes em um ambiente controlado até atualizar em produção"
+        ],
+        correta: "Através de diversos testes em um ambiente controlado até atualizar em produção"
+      },
+      {
+        enunciado: "Uma das etapas do ciclo de vida dos dados dentro de um software é o processamento. Selecione a opção correta que apresenta uma situação que envolve o processamento de dados com vulnerabilidade de segurança:",
+        opcoes: [
+          "Permitir que todos os usuários tenham os mesmos direitos de processamento",
+          "Associar direitos aos perfis dos usuários",
+          "Aplicar a política de privilégios mínimos para todos os usuários",
+          "Utilizar algoritmos de criptografia",
+          "Usar segmentação de funções"
+        ],
+        correta: "Permitir que todos os usuários tenham os mesmos direitos de processamento"
+      },
+      {
+        enunciado: "A tecnologia de processamento da nuvem está cada vez mais popular. Selecione a opção correta sobre uma das vantagens para segurança associadas ao processamento de dados na nuvem.",
+        opcoes: [
+          "As configurações adequadas são escaláveis",
+          "Possibilitar a criação de uma infraestrutura similar à da nuvem para criar redundâncias",
+          "Usar as configurações padrões do fornecedor",
+          "Trabalhar com empresas de pequeno porte",
+          "Usar serviços de rede para fazer chamadas aos programas"
+        ],
+        correta: "As configurações adequadas são escaláveis"
+      },
+      {
+        enunciado: "Existem diversas fontes de informação que descrevem as vulnerabilidades de segurança. Um exemplo é a OWASP. Selecione a opção correta a respeito da afirmação: 'Um invasor pode utilizar uma fonte oficial de informação para aprender a explorar vulnerabilidades de um software'.",
+        opcoes: [
+          "Está errada, pois essas fontes não fornecem muitos detalhes",
+          "Está correta, pois um invasor pode usar um conhecimento para explorar sistemas vulneráveis",
+          "Está errada, pois essas fontes são explícitas sobre as consequências do uso indevido",
+          "Está correta, pois o objetivo dessas fontes é que os sistemas vulneráveis sofram consequências",
+          "Está correta, pois é natural que após aprender um indivíduo passe a explorar"
+        ],
+        correta: "Está correta, pois um invasor pode usar um conhecimento para explorar sistemas vulneráveis"
+      },
+      // Questões do seg3.pdf
+      {
+        enunciado: "A criatividade pode ser encarada como um produto de cognição humana. Analise as sentenças: I - Toda vulnerabilidade é bug e vice-versa. II - Software confiável e seguro são distintos. III - Boas práticas garantem sistema 100% livre de falhas. Marque a alternativa correta.",
+        opcoes: ["Apenas I está correta", "Apenas II está correta", "Apenas I e II estão corretas", "Apenas I e III estão corretas", "Apenas II e III estão corretas"],
+        correta: "Apenas II está correta"
+      },
+      {
+        enunciado: "Considerando o ciclo de vida de desenvolvimento de software seguro (SDL), a primeira etapa de elicitação de requisitos é crítica. Assinale a alternativa que apresenta o melhor exemplo de requisitos a serem levantados.",
+        opcoes: [
+          "Autenticação, controle de acesso, proteção de dados, auditoria e linguagem de programação",
+          "Autenticação, controle de acesso, proteção de dados, tamanho da infraestrutura e conformidade",
+          "Autenticação, controle de acesso, desempenho para acesso concorrente, auditoria e conformidade",
+          "Velocidade de resposta, proteção de dados, auditoria e conformidade",
+          "Autenticação, controle de acesso, proteção de dados, auditoria e conformidade normativa"
+        ],
+        correta: "Autenticação, controle de acesso, proteção de dados, auditoria e conformidade normativa"
+      },
+      {
+        enunciado: "Assinale a alternativa que melhor descreve a fase do modelo de ameaças na qual devem ser executadas as atividades: identificar metas do sistema, identificar ativos e identificar ameaças.",
+        opcoes: ["Validar modelo de ameaças", "Mitigar ameaças", "Identificar ameaças", "Diagramar fluxos de dados", "Definir objetivos"],
+        correta: "Definir objetivos"
+      },
+      {
+        enunciado: "A respeito das normas relacionadas à segurança da informação, leia as afirmativas e selecione a alternativa mais adequada. I - ISO 27000 fornece diretrizes especificamente para sistemas de software. II - ISO/IEC 15288 é usada para ciclo de vida de sistemas de software. III - ISO/IEC 20004 se apoia em outras normas para avaliar vulnerabilidades.",
+        opcoes: ["Apenas I está correta", "Apenas II está correta", "Apenas III está correta", "Apenas I e III estão corretas", "Apenas II e III estão corretas"],
+        correta: "Apenas II e III estão corretas"
+      },
+      {
+        enunciado: "Considerando a análise de risco pela relação probabilidade versus impacto, assinale a categorização do risco que corresponde a uma baixíssima probabilidade e um altíssimo impacto.",
+        opcoes: ["Muito baixo", "Baixo", "Médio", "Alto", "Muito alto"],
+        correta: "Médio"
+      },
+      {
+        enunciado: "Dentro do processo de modelagem de ameaças, assinale a alternativa que corresponde à etapa que envolve o desenvolvimento de contramedidas voltadas às ameaças identificadas.",
+        opcoes: ["Mitigação de ameaças", "Diagramação dos fluxos de dados", "Definição dos objetivos", "Validação do modelo de ameaças", "Identificação das ameaças"],
+        correta: "Mitigação de ameaças"
+      },
+      {
+        enunciado: "Na gestão de riscos de software, uma vez que os riscos sejam identificados, precisam ser tratados. Quais as três abordagens principais de tratamento de risco?",
+        opcoes: ["Mitigados, aceitos e delegados", "Sanados, medidos e delegados", "Medidos, avaliados e controlados", "Mitigados, controlados e delegados", "Aceitos, mitigados e controlados"],
+        correta: "Mitigados, aceitos e delegados"
+      },
+      {
+        enunciado: "Considerando o SDL, assinale a alternativa correta relacionada às afirmações: I - Teste que garante funções planejadas. II - Teste que busca vulnerabilidades. III - Teste sob cenários de estresse. IV - Teste de facilidade de uso.",
+        opcoes: [
+          "I-desempenho, II-segurança, III-funcional, IV-usabilidade",
+          "I-usabilidade, II-segurança, III-desempenho, IV-funcional",
+          "I-funcional, II-segurança, III-desempenho, IV-usabilidade",
+          "I-segurança, II-funcional, III-desempenho, IV-usabilidade",
+          "I-funcional, II-usabilidade, III-desempenho, IV-segurança"
+        ],
+        correta: "I-funcional, II-segurança, III-desempenho, IV-usabilidade"
+      },
+      {
+        enunciado: "Sobre a etapa de validação do modelo de ameaças, assinale a alternativa correta: I - Deve garantir consistência sem se preocupar com prática. II - Uma vez encerrada, não há necessidade de revisar. III - Envolve verificar precisão, completude e eficácia.",
+        opcoes: ["Apenas I está correta", "Apenas II está correta", "Apenas III está correta", "Apenas I e II estão corretas", "Apenas II e III estão corretas"],
+        correta: "Apenas III está correta"
+      },
+      {
+        enunciado: "A última etapa do SDL demanda ações relacionadas à implantação e manutenção. Assinale a alternativa que melhor completa: I - ___ são atualizações para solucionar falhas. II - ___ otimizam performance. III - ___ são medidas de recuperação de desastres.",
+        opcoes: [
+          "I-ajustes desempenho, II-patches segurança, III-backups dados",
+          "I-patches segurança, II-ajustes desempenho, III-backups dados",
+          "I-backups dados, II-ajustes desempenho, III-patches segurança",
+          "I-patches segurança, II-ajustes desempenho, III-testes funcionais",
+          "I-patches segurança, II-backups dados, III-ajustes desempenho"
+        ],
+        correta: "I-patches segurança, II-ajustes desempenho, III-backups dados"
+      },
+      // Questões do seg4.pdf
+      {
+        enunciado: "Como o DevSecOps promove a cultura de segurança no desenvolvimento de software?",
+        opcoes: [
+          "Permitindo a exclusão da responsabilidade pela segurança da equipe de desenvolvimento",
+          "Permitindo a implementação de políticas e práticas de segurança inconsistentes",
+          "Permitindo o envolvimento de equipes de segurança apenas no final do processo",
+          "Permitindo que todos os membros da equipe sejam responsáveis pela segurança do software",
+          "Permitindo a automação completa da segurança sem envolvimento humano"
+        ],
+        correta: "Permitindo que todos os membros da equipe sejam responsáveis pela segurança do software"
+      },
+      {
+        enunciado: "A governança em segurança da informação desempenha um papel essencial. Qual dos seguintes conceitos melhor descreve governança no contexto de segurança da informação?",
+        opcoes: [
+          "Conjunto de processos, políticas e diretrizes para gerenciar e controlar a segurança da informação",
+          "Implementação de ferramentas automatizadas para monitorar redes internas",
+          "Realização de testes manuais para identificar falhas de configuração",
+          "Criação de documentos isolados para controle de usuários",
+          "Execução de testes de usabilidade para avaliar a experiência do usuário"
+        ],
+        correta: "Conjunto de processos, políticas e diretrizes para gerenciar e controlar a segurança da informação"
+      },
+      {
+        enunciado: "Qual das metodologias de modelagem de ameaças prioriza a criação de um modelo abrangente que inclua atores, ativos e impacto potencial?",
+        opcoes: ["Stride", "Pasta", "Dread", "Trike", "CIS Controls"],
+        correta: "Pasta"
+      },
+      {
+        enunciado: "Qual é um dos principais benefícios do DevSecOps para o ciclo de vida do desenvolvimento de software?",
+        opcoes: [
+          "Maior transparência e compreensão dos riscos de segurança durante todo o desenvolvimento",
+          "Redução do tempo de desenvolvimento ao eliminar testes de segurança",
+          "Aumento dos custos com a implementação de automações de segurança",
+          "Restrição da responsabilidade da segurança apenas às equipes de TI",
+          "Menor eficiência devido ao aumento do número de testes automatizados"
+        ],
+        correta: "Maior transparência e compreensão dos riscos de segurança durante todo o desenvolvimento"
+      },
+      {
+        enunciado: "Considerando CI/CD (Continuous Integration/Continuous Delivery), como o DevSecOps complementa essa prática?",
+        opcoes: [
+          "Adicionando controles de segurança automatizados em todas as etapas do processo de entrega",
+          "Automatizando o processo de compilação, teste e implantação de código-fonte",
+          "Incentivando a colaboração entre equipes de segurança, desenvolvimento e operações",
+          "Focando na detecção de erros no ciclo de vida do desenvolvimento",
+          "Automatizando as etapas do processo de entrega de software"
+        ],
+        correta: "Adicionando controles de segurança automatizados em todas as etapas do processo de entrega"
+      },
+      {
+        enunciado: "Sobre a importância dos scripts de teste no desenvolvimento de software, avalie: I - Permitem automação de tarefas de segurança. II - Garantem identificação e correção eficiente de vulnerabilidades. III - Permitem execução repetitiva e consistente de testes. Está correto o que se afirma em:",
+        opcoes: ["I, II e III", "I e II", "I e III", "II e III", "Somente em III"],
+        correta: "I, II e III"
+      },
+      {
+        enunciado: "Qual é a finalidade dos scripts no contexto do DevSecOps?",
+        opcoes: [
+          "Automatizar tarefas repetitivas e complexas",
+          "Garantir a conformidade do software com leis e regulamentos",
+          "Executar testes de desempenho do software",
+          "Integrar ferramentas de segurança ao pipeline de entrega contínua",
+          "Automatizar as tarefas do ciclo de vida"
+        ],
+        correta: "Integrar ferramentas de segurança ao pipeline de entrega contínua"
+      },
+      {
+        enunciado: "Entre as metodologias de modelagem de ameaças, qual tem como foco a análise qualitativa de risco utilizando cinco critérios que incluem dano e reprodutibilidade?",
+        opcoes: ["Nist SP 800-61r2", "Stride", "Trike", "Pasta", "Dread"],
+        correta: "Dread"
+      },
+      {
+        enunciado: "No contexto de DevSecOps, qual característica melhor define a orquestração?",
+        opcoes: [
+          "Coordenação de ferramentas e processos de automação para garantir uma cadeia de eventos contínua",
+          "Execução manual de testes de segurança em ambiente de produção",
+          "Desligamento de sistemas críticos para evitar falhas de segurança",
+          "Criação de relatórios manuais sobre o uso de ferramentas de automação",
+          "Priorização de testes manuais de usabilidade em detrimento de testes automatizados"
+        ],
+        correta: "Coordenação de ferramentas e processos de automação para garantir uma cadeia de eventos contínua"
+      },
+      {
+        enunciado: "Qual é o principal objetivo de uma auditoria de segurança no contexto de governança e conformidade?",
+        opcoes: [
+          "Identificar vulnerabilidades no código-fonte dos sistemas",
+          "Avaliar se as atividades e processos estão em conformidade com normas e identificar pontos de melhoria",
+          "Garantir que todas as atualizações sejam realizadas manualmente pelos desenvolvedores",
+          "Certificar que os documentos fiscais estejam arquivados corretamente",
+          "Implementar firewalls para bloquear ataques externos"
+        ],
+        correta: "Avaliar se as atividades e processos estão em conformidade com normas e identificar pontos de melhoria"
+      }
+    ];
+
+    // ==================== LÓGICA DO SIMULADO ====================
+    
+    let questoesAtuais = [];
+    
+    function embaralharArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+    
+    function carregarNovoSimulado() {
+      // Embaralhar todas as questões e pegar 10
+      const embaralhadas = embaralharArray([...questoesDB]);
+      questoesAtuais = embaralhadas.slice(0, 10);
+      renderizarSimulado();
+      
+      // Esconder resultado anterior
+      document.getElementById("resultado").style.display = "none";
+      document.getElementById("resultado").innerHTML = "";
+    }
+    
+    function renderizarSimulado() {
+      const container = document.getElementById("simulado");
+      container.innerHTML = "";
+      
+      questoesAtuais.forEach((q, idx) => {
+        const divQuestao = document.createElement("div");
+        divQuestao.className = "questao";
+        divQuestao.id = `questao-${idx}`;
+        
+        divQuestao.innerHTML = `
+          <div class="questao-texto">
+            <strong>Questão ${idx + 1}:</strong> ${q.enunciado}
+          </div>
+          <div class="opcoes" id="opcoes-${idx}">
+            ${q.opcoes.map((op, optIdx) => `
+              <div class="opcao" onclick="selecionarOpcao(${idx}, ${optIdx})">
+                <input type="radio" name="q${idx}" id="q${idx}_opt${optIdx}" value="${op.replace(/"/g, '&quot;')}">
+                <label for="q${idx}_opt${optIdx}">${op}</label>
+              </div>
+            `).join('')}
+          </div>
+          <div class="feedback" id="feedback-${idx}" style="display: none;"></div>
+        `;
+        
+        container.appendChild(divQuestao);
+      });
+      
+      document.getElementById("totalQuestoes").innerText = questoesDB.length;
+    }
+    
+    // Função global para selecionar opção
+    window.selecionarOpcao = function(questaoIdx, opcaoIdx) {
+      const radio = document.getElementById(`q${questaoIdx}_opt${opcaoIdx}`);
+      if (radio) {
+        radio.checked = true;
+      }
+    };
+    
+    window.corrigirSimulado = function() {
+      let acertos = 0;
+      const resultados = [];
+      
+      questoesAtuais.forEach((q, idx) => {
+        const selecionado = document.querySelector(`input[name="q${idx}"]:checked`);
+        const respostaUsuario = selecionado ? selecionado.value : null;
+        const isCorreta = (respostaUsuario === q.correta);
+        
+        if (isCorreta) acertos++;
+        
+        const feedbackDiv = document.getElementById(`feedback-${idx}`);
+        feedbackDiv.style.display = "block";
+        feedbackDiv.className = `feedback ${isCorreta ? "correta" : "incorreta"}`;
+        
+        if (isCorreta) {
+          feedbackDiv.innerHTML = "✅ Correta!";
+        } else {
+          feedbackDiv.innerHTML = `❌ Incorreta!<br><strong>Resposta correta:</strong> ${q.correta}`;
+        }
+        
+        resultados.push({
+          questao: q.enunciado,
+          correta: isCorreta,
+          respostaCorreta: q.correta
+        });
+      });
+      
+      const percentual = (acertos / questoesAtuais.length) * 100;
+      let mensagem = "";
+      if (percentual >= 70) {
+        mensagem = "🎉 Parabéns! Você foi aprovado!";
+      } else if (percentual >= 50) {
+        mensagem = "📚 Bom trabalho! Continue estudando para melhorar.";
+      } else {
+        mensagem = "💪 Continue treinando! Revise os conceitos e tente novamente.";
+      }
+      
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.style.display = "block";
+      resultadoDiv.innerHTML = `
+        <div style="font-size: 1.5em; margin-bottom: 10px;">📊 Resultado Final</div>
+        <div style="font-size: 2em; margin-bottom: 10px;">${acertos} / ${questoesAtuais.length}</div>
+        <div style="font-size: 1.1em; margin-bottom: 10px;">${percentual}% de acerto</div>
+        <div>${mensagem}</div>
+      `;
+      
+      // Rolagem suave para o resultado
+      resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    
+    window.novoSimulado = function() {
+      carregarNovoSimulado();
+    };
+    
+    // Inicializar o simulado
+    carregarNovoSimulado();
+  </script>
+</body>
+</html>
